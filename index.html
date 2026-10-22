@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131b">
+  <title>CodeSpace — Local Web IDE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn mobile-only" id="menuBtn" aria-label="Open file explorer">☰</button>
+    <a class="brand" href="index.html" aria-label="CodeSpace home"><span class="brand-mark">⌘</span><span>Code<span class="accent-text">Space</span></span></a>
+    <div class="project-chip"><i></i><span id="projectNameLabel">my-project</span></div>
+    <div class="top-actions">
+      <button class="btn ghost" id="guideBtn">▤ <span class="wide-label">Guides</span></button>
+      <button class="btn ghost" id="extensionsBtn">⊞ <span class="wide-label">Extensions</span></button>
+      <button class="btn ghost" id="newFileBtn">＋ <span class="wide-label">New file</span></button>
+      <button class="btn ghost" id="saveBtn">↧ <span class="wide-label">Save</span></button>
+      <button class="btn primary" id="runBtn">▶ <span>Run</span></button>
+    </div>
+  </header>
+
+  <main class="workspace" id="workspace">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-heading"><span>EXPLORER</span><div><button class="tiny-btn" id="newFileSide" title="New file">＋</button><button class="tiny-btn" id="newFolderBtn" title="New folder">📁</button><button class="tiny-btn" id="exportBtn" title="Export project">⇩</button></div></div>
+      <div class="project-row"><span class="folder-caret">▾</span><span class="folder-icon">▰</span><strong>MY-PROJECT</strong></div>
+      <div class="file-list" id="fileList"></div>
+      <div class="side-bottom">
+        <div class="side-heading"><span>QUICK TOOLS</span></div>
+        <button class="side-tool" id="guideSide">📘 HTML / CSS / JS Guide</button>
+        <button class="side-tool" id="extensionsSide">🧩 Extension Center</button>
+        <button class="side-tool" id="importFilesBtn">📄 Import file(s)</button>
+        <button class="side-tool" id="openFolderBtn">📁 Open folder</button>
+        <button class="side-tool" id="uploadZipBtn">🗜️ Upload ZIP project</button>
+        <button class="side-tool" id="importBtn">⇧ Import JSON backup</button>
+        <input type="file" id="fileImportInput" multiple accept=".html,.htm,.css,.js,.mjs,.cjs,.ts,.jsx,.tsx,.json,.txt,.md,.xml,.svg,.php,.py,.java,.c,.h,.cpp,.sql,.yaml,.yml,.sh,.csv" hidden>
+        <input type="file" id="folderImportInput" webkitdirectory directory multiple hidden>
+        <input type="file" id="zipImportInput" accept=".zip,application/zip,application/x-zip-compressed" hidden>
+        <input type="file" id="importInput" accept=".json,application/json" hidden>
+        <p class="side-note">Import files, folders or ZIPs. Export your project as a ZIP backup.</p>
+      </div>
+    </aside>
+
+    <section class="editor-area" id="editorArea">
+      <div class="tabs" id="tabs"></div>
+      <div class="editor-toolbar">
+        <div class="breadcrumbs" id="breadcrumbs">my-project / <b>index.html</b></div>
+        <div class="editor-actions">
+          <button class="tiny-btn" id="formatBtn" title="Basic formatting">⌘ Format</button>
+          <button class="tiny-btn" id="expandBtn" title="Expand a shortcut">⚡ Expand</button>
+          <button class="tiny-btn" id="searchBtn" title="Search and replace">⌕ Search</button>
+          <button class="tiny-btn" id="zoomOutBtn" title="Decrease font size">A−</button>
+          <button class="tiny-btn" id="zoomInBtn" title="Increase font size">A+</button>
+          <button class="tiny-btn" id="themeBtn" title="Toggle editor theme">◐</button>
+        </div>
+      </div>
+      <div class="mobile-codebar" aria-label="Touch coding toolbar">
+        <button type="button" data-mobile-action="tab">⇥ Tab</button>
+        <button type="button" data-mobile-action="suggest">✦ Suggest</button>
+        <button type="button" data-mobile-action="expand">⚡ Expand</button>
+        <button type="button" data-mobile-action="braces">{ }</button>
+        <button type="button" data-mobile-action="parens">( )</button>
+        <button type="button" data-mobile-action="semicolon">;</button>
+        <button type="button" data-mobile-action="comment">//</button>
+        <button type="button" data-mobile-action="undo">↶</button>
+        <button type="button" data-mobile-action="redo">↷</button>
+      </div>
+      <div class="search-panel" id="searchPanel" hidden>
+        <input id="searchQuery" placeholder="Find in project…" aria-label="Search project">
+        <input id="replaceQuery" placeholder="Replace with…" aria-label="Replace text">
+        <button class="tiny-btn" id="findNextBtn">Find next</button><button class="tiny-btn" id="replaceBtn">Replace</button><button class="tiny-btn" id="replaceAllBtn">Replace all</button><button class="tiny-btn" id="closeSearchBtn">×</button>
+      </div>
+      <div class="editor-wrap">
+        <pre id="highlightLayer" aria-hidden="true"><code id="highlightCode"></code></pre>
+        <div class="line-numbers" id="lineNumbers">1</div>
+        <textarea id="codeEditor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor"></textarea>
+      </div>
+      <div class="statusbar"><span id="languageStatus">HTML</span><span id="saveStatus">Ready</span><span id="cursorStatus">Ln 1, Col 1</span><span>Local workspace</span></div>
+    </section>
+
+    <section class="preview-area" id="previewArea">
+      <div class="preview-header"><div><span class="preview-dot"></span><strong>Live Preview</strong></div><div><select id="deviceSize" aria-label="Preview device"><option value="100%">Desktop</option><option value="390px">Phone</option><option value="768px">Tablet</option></select><button class="tiny-btn" id="refreshPreview" title="Refresh preview">↻</button><button class="tiny-btn" id="closePreview" title="Close preview">×</button></div></div>
+      <iframe id="previewFrame" title="Website preview" sandbox="allow-scripts"></iframe>
+      <div class="console-panel" id="consolePanel"><div class="console-head"><strong>Console</strong><button class="tiny-btn" id="clearConsoleBtn">Clear</button></div><pre id="consoleOutput">Console ready.</pre></div><div class="preview-footer">Sandboxed preview · Local only</div>
+    </section>
+
+    <aside class="tool-panel" id="toolPanel" hidden>
+      <div class="panel-heading"><strong id="panelTitle">Guide</strong><button class="tiny-btn" id="closePanel">×</button></div>
+      <div class="panel-tabs" id="panelTabs"></div>
+      <div class="panel-content" id="panelContent"></div>
+    </aside>
+  </main>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="mobile-nav-item active" id="navCode">⌨ <span>Code</span></button>
+    <button class="mobile-nav-item" id="navFiles">▤ <span>Files</span></button>
+    <button class="mobile-nav-item" id="navPreview">▶ <span>Preview</span></button>
+    <button class="mobile-nav-item" id="navGuide">📘 <span>Guide</span></button>
+  </nav>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <form class="modal" id="newFileForm">
+      <div class="modal-title">Create a file <button type="button" class="tiny-btn" id="cancelModal">×</button></div>
+      <label for="fileNameInput">File name</label>
+      <input id="fileNameInput" placeholder="e.g. about.html or css/main.css" required maxlength="80">
+      <p class="modal-help">Tip: type folder/name.ext to create it inside a folder</p>
+      <div class="modal-actions"><button type="button" class="btn ghost" id="cancelModal2">Cancel</button><button class="btn primary" type="submit">Create file</button></div>
+    </form>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="jszip.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
